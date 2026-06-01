@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Crítico | LogiStock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+    <nav th:replace="~{layout/fragments :: nav-stock}"></nav>
+
+    <main class="container my-5 animate-in" style="flex: 1 0 auto;">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Productos en Stock Crítico</h3>
+                <p class="text-muted mb-0">Base de datos MySQL consultada exitosamente.</p>
+            </div>
+            <button class="btn btn-outline-danger shadow-sm d-flex align-items-center gap-2" onclick="window.print()">
+                <i class="bi bi-printer"></i> Imprimir Reporte
+            </button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-panel">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 custom-table">
+                    <thead class="bg-danger text-white shadow-sm">
+                        <tr>
+                            <th class="px-4 text-white">Producto</th>
+                            <th class="text-white">Categoría</th>
+                            <th class="text-center text-white">Stock Actual</th>
+                            <th class="text-end text-white">Costo Unit.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaCriticos">
+                        <tr th:if="${criticos.isEmpty()}">
+                            <td colspan="4" class="text-center py-5 text-success fw-bold">
+                                <i class="bi bi-check-circle fs-1 d-block mb-2"></i> ¡No hay productos críticos en MySQL!
+                            </td>
+                        </tr>
+                        <tr th:each="p : ${criticos}" class="table-row-hover">
+                            <td class="fw-bold px-4 text-dark" th:text="${p.nombre}">Nombre</td>
+                            <td><span class="badge bg-secondary border" th:text="${p.categoria.nombre}">Cat</span></td>
+                            <td class="text-center">
+                                <span class="badge bg-danger rounded-pill px-3 py-2 animate-pulse" th:text="${p.cantidad} + ' und.'">0 und.</span>
+                            </td>
+                            <td class="text-end fw-semibold text-muted" th:text="'S/ ' + ${p.precioCompra}">S/ 0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/fragments :: footer-app}"></footer>
+</body>
+</html>

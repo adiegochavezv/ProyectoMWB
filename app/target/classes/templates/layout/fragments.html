@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <nav th:fragment="nav-index" class="fixed w-full z-50 glass-nav border-b border-slate-200">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">LogiStock</span>
+            </div>
+            <div class="hidden md:flex gap-8 font-medium text-slate-600">
+                <a href="#features" class="hover:text-blue-600">Funciones</a>
+                <a href="#preview" class="hover:text-blue-600">Interfaz</a>
+                <a href="#pricing" class="hover:text-blue-600">Comprar</a>
+            </div>
+            <div class="flex items-center gap-3"> 
+                <a href="#pricing" class="border border-blue-600 text-blue-600 px-5 py-2 rounded-full font-bold hover:bg-blue-50 transition text-sm whitespace-nowrap">
+                    Obtener Licencia
+                </a>
+                <a th:href="@{/dashboard}" class="border border-blue-600 text-blue-600 px-5 py-2 rounded-full font-bold hover:bg-blue-50 transition text-sm whitespace-nowrap">
+                    Acceder al Sistema
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <footer th:fragment="footer-index" class="py-10 text-center text-slate-400 text-sm">
+        LogiStock v2.8 © 2026. Todos los derechos reservados.
+    </footer>
+
+    <nav th:fragment="nav-dashboard" class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <span class="navbar-brand fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-box-seam text-primary"></i> LogiStock
+            </span>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <button class="btn btn-sm btn-outline-light nav-btn" onclick="verDashboard()"><i class="bi bi-house-door"></i> Inicio</button>
+                <button class="btn btn-sm btn-outline-light nav-btn" onclick="verInventario()"><i class="bi bi-archive"></i> Almacén</button>
+                <button class="btn btn-sm btn-outline-light nav-btn" onclick="verHistorial()"><i class="bi bi-clock-history"></i> Auditoría</button>
+                <button class="btn btn-sm btn-outline-warning shadow-sm ms-2" onclick="toggleDarkMode()" title="Cambiar Tema"><i class="bi bi-moon-stars-fill" id="iconoTema"></i></button>
+                <button class="btn btn-sm btn-danger ms-2 shadow-sm" onclick="logout()"><i class="bi bi-power"></i> Cerrar Sesion</button>
+                <a th:href="@{/}" class="bg-red-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-600 transition flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i> Salir
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <nav th:fragment="nav-stock" class="navbar navbar-expand-lg navbar-dark bg-danger sticky-top shadow-sm">
+        <div class="container">
+            <span class="navbar-brand fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-exclamation-triangle-fill text-white"></i> LogiStock | Reabastecimiento
+            </span>
+            <div class="d-flex gap-2">
+                <a th:href="@{/dashboard}" class="btn btn-sm btn-light text-danger fw-bold shadow-sm">
+                    <i class="bi bi-arrow-left"></i> Volver al Sistema
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <footer th:fragment="footer-app" class="footer-custom border-top py-4 mt-auto">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <span class="fw-bold text-primary">LogiStock</span>
+                    <span class="version-badge">v2.6</span>
+                    <span class="text-muted ms-1">© 2026</span>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <p class="text-muted small mb-0">Sistema de Control de Inventarios LogiStock</p>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <div class="d-flex justify-content-center justify-content-md-end gap-3">
+                        <button class="btn btn-link btn-sm text-muted text-decoration-none" onclick="window.location.href='/dashboard'">Inicio</button>
+                        <button class="btn btn-link btn-sm text-muted text-decoration-none" onclick="window.location.href='/dashboard'">Inventario</button>
+                        <button class="btn btn-link btn-sm text-muted text-decoration-none" onclick="window.location.href='/dashboard'">Auditoría</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
