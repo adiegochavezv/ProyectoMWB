@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<head>
+    <meta charset="UTF-8">
+</head>
 <body>
-
     <nav th:fragment="nav-index" class="fixed w-full z-50 glass-nav border-b border-slate-200">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -17,10 +18,7 @@
                 <a href="#pricing" class="hover:text-blue-600">Comprar</a>
             </div>
             <div class="flex items-center gap-3"> 
-                <a href="#pricing" class="border border-blue-600 text-blue-600 px-5 py-2 rounded-full font-bold hover:bg-blue-50 transition text-sm whitespace-nowrap">
-                    Obtener Licencia
-                </a>
-                <a th:href="@{/dashboard}" class="border border-blue-600 text-blue-600 px-5 py-2 rounded-full font-bold hover:bg-blue-50 transition text-sm whitespace-nowrap">
+                <a th:href="@{/dashboard}" class="border border-blue-600 bg-blue-600 text-white px-5 py-2 rounded-full font-bold hover:bg-blue-700 transition text-sm whitespace-nowrap shadow-sm">
                     Acceder al Sistema
                 </a>
             </div>
@@ -28,70 +26,76 @@
     </nav>
 
     <footer th:fragment="footer-index" class="py-10 text-center text-slate-400 text-sm">
-        LogiStock v2.8 © 2026. Todos los derechos reservados.
+        LogiStock v2.8 © 2026. Todos los derechos reservados a nivel internacional.
     </footer>
 
-    <nav th:fragment="nav-dashboard" class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
-        <div class="container">
-            <span class="navbar-brand fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-box-seam text-primary"></i> LogiStock
-            </span>
-            <div class="d-flex gap-2 align-items-center flex-wrap">
-                <button class="btn btn-sm btn-outline-light nav-btn" onclick="verDashboard()"><i class="bi bi-house-door"></i> Inicio</button>
-                <button class="btn btn-sm btn-outline-light nav-btn" onclick="verInventario()"><i class="bi bi-archive"></i> Almacén</button>
-                <button class="btn btn-sm btn-outline-light nav-btn" onclick="verHistorial()"><i class="bi bi-clock-history"></i> Auditoría</button>
-                
-                <button class="btn btn-sm btn-outline-warning shadow-sm ms-2" id="btn-dark-mode" title="Cambiar Tema">
-                    <i class="bi bi-moon-stars-fill" id="iconoTema"></i>
+    <div th:fragment="nav-dashboard" class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark sidebar-custom" style="width: 260px; min-height: 100vh;">
+        <a th:href="@{/dashboard}" class="d-flex align-items-center mb-4 me-md-auto text-white text-decoration-none">
+            <i class="bi bi-box-seam-fill text-primary fs-2 me-3"></i>
+            <span class="fs-4 fw-bold tracking-tight">LogiStock</span>
+        </a>
+        <hr class="border-secondary mb-4">
+        
+        <ul class="nav nav-pills flex-column mb-auto gap-2">
+            <li class="nav-item">
+                <a th:href="@{/dashboard}" class="nav-link text-white fw-medium transition-all" th:classappend="${#httpServletRequest.requestURI == '/dashboard' ? 'active shadow-sm bg-primary' : ''}">
+                    <i class="bi bi-speedometer2 me-3"></i> Dashboard
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a th:href="@{/catalogo}" class="nav-link text-white fw-medium transition-all" th:classappend="${#httpServletRequest.requestURI == '/catalogo' ? 'active shadow-sm bg-primary' : ''}">
+                    <i class="bi bi-grid-3x3-gap-fill me-3"></i> Catálogo
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a th:href="@{/productos}" class="nav-link text-white fw-medium transition-all" th:classappend="${#httpServletRequest.requestURI == '/productos' ? 'active shadow-sm bg-primary' : ''}">
+                    <i class="bi bi-archive-fill me-3"></i> Almacén y Stock
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a th:href="@{/auditoria}" class="nav-link text-white fw-medium transition-all" th:classappend="${#httpServletRequest.requestURI == '/auditoria' ? 'active shadow-sm bg-primary' : ''}">
+                    <i class="bi bi-clock-history me-3"></i> Auditoría (Logs)
+                </a>
+            </li>
+        </ul>
+        
+        <hr class="border-secondary mt-5 mb-4">
+        
+        <div class="d-flex flex-column gap-3 mt-auto pb-2">
+            <button id="btn-dark-mode" class="btn btn-outline-warning w-100 fw-bold d-flex align-items-center justify-content-center transition-all shadow-sm">
+                <i class="bi bi-moon-stars-fill me-2" id="iconoTema"></i> <span>Tema Oscuro</span>
+            </button>
+            
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-danger w-100 fw-bold d-flex align-items-center justify-content-center transition-all shadow-sm">
+                    <i class="bi bi-power me-2"></i> Cerrar Sesión
                 </button>
-                
-                <form th:action="@{/logout}" method="post" class="d-inline m-0">
-                    <button type="submit" class="btn btn-sm btn-danger ms-2 shadow-sm">
-                        <i class="bi bi-power"></i> Cerrar Sesion
-                    </button>
-                </form>
-                
-                <a th:href="@{/}" class="btn btn-sm btn-outline-secondary ms-2 text-white text-decoration-none">
-                    <i class="bi bi-arrow-left"></i> Salir
-                </a>
-            </div>
+            </form>
         </div>
-    </nav>
+    </div>
 
-    <nav th:fragment="nav-stock" class="navbar navbar-expand-lg navbar-dark bg-danger sticky-top shadow-sm">
-        <div class="container">
-            <span class="navbar-brand fw-bold d-flex align-items-center gap-2">
-                <i class="bi bi-exclamation-triangle-fill text-white"></i> LogiStock | Reabastecimiento
-            </span>
-            <div class="d-flex gap-2">
-                <a th:href="@{/dashboard}" class="btn btn-sm btn-light text-danger fw-bold shadow-sm">
-                    <i class="bi bi-arrow-left"></i> Volver al Sistema
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <footer th:fragment="footer-app" class="footer-custom border-top py-4 mt-auto">
-        <div class="container">
+    <footer th:fragment="footer-app" class="footer-custom border-top py-4 mt-auto w-100 bg-white">
+        <div class="container-fluid px-4">
             <div class="row align-items-center">
                 <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
                     <span class="fw-bold text-primary">LogiStock</span>
-                    <span class="version-badge">v2.6</span>
-                    <span class="text-muted ms-1">© 2026</span>
+                    <span class="badge bg-primary ms-2 rounded-pill">v2.8</span>
+                    <span class="text-muted ms-2 small">© 2026</span>
                 </div>
                 <div class="col-md-4 text-center mb-3 mb-md-0">
-                    <p class="text-muted small mb-0">Sistema de Control de Inventarios LogiStock</p>
+                    <p class="text-muted small mb-0 fw-medium">Plataforma Avanzada de Gestión Logística</p>
                 </div>
                 <div class="col-md-4 text-center text-md-end">
                     <div class="d-flex justify-content-center justify-content-md-end gap-3">
-                        <button class="btn btn-link btn-sm text-muted text-decoration-none" onclick="verDashboard()">Inicio</button>
-                        <button class="btn btn-link btn-sm text-muted text-decoration-none" onclick="verInventario()">Inventario</button>
-                        <button class="btn btn-link btn-sm text-muted text-decoration-none" onclick="verHistorial()">Auditoría</button>
+                        <a href="/dashboard" class="text-muted text-decoration-none small fw-medium hover-primary">Soporte técnico</a>
+                        <a href="/auditoria" class="text-muted text-decoration-none small fw-medium hover-primary">Política de privacidad</a>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
-
 </body>
 </html>

@@ -2,36 +2,74 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Acceso | LogiStock</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Corporativo | LogiStock</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .login-page { min-height: 100vh; background-color: #f4f6f9; display: flex; align-items: center; justify-content: center; }
+        .login-wrapper { max-width: 900px; width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; background: #fff; }
+        .login-brand-side { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); color: white; padding: 4rem; display: flex; flex-direction: column; justify-content: center; flex: 1; }
+        .login-form-side { padding: 4rem; flex: 1.2; display: flex; flex-direction: column; justify-content: center; }
+        body.dark-mode .login-page { background-color: #121212; }
+        body.dark-mode .login-wrapper { background: #1e1e1e; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        @media (max-width: 768px) { .login-brand-side { display: none; } .login-form-side { padding: 2rem; } }
+    </style>
 </head>
-<body class="bg-light d-flex align-items-center" style="height: 100vh;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
-                <div class="card shadow-lg p-4">
-                    <h3 class="text-center fw-bold text-primary mb-4">Ingreso al Sistema</h3>
-                    
-                    <div th:if="${param.error}" class="alert alert-danger text-center">
-                        Usuario o contraseña incorrectos. Verifica tus credenciales.
-                    </div>
-                    <div th:if="${param.logout}" class="alert alert-success text-center">
-                        Sesión cerrada exitosamente.
-                    </div>
+<body class="login-page transition-all">
 
-                   <form th:action="@{/login}" method="post">
-    <input type="email" name="username" class="form-control" placeholder="Correo" required />
-    <input type="password" name="password" class="form-control" placeholder="Contraseña" required />
-    <button type="submit" class="btn btn-primary">Ingresar</button>
-</form>
-                    
-                    <div class="text-center mt-3">
-                        <a th:href="@{/}" class="text-decoration-none">Volver al Inicio</a>
-                    </div>
+    <div class="login-wrapper m-3">
+        <div class="login-brand-side">
+            <i class="bi bi-box-seam-fill display-1 mb-4"></i>
+            <h1 class="fw-bold mb-3 tracking-tight">LogiStock Pro</h1>
+            <p class="fs-5 opacity-75 mb-0">Gestión de inventarios, analíticas en tiempo real y trazabilidad absoluta para su empresa.</p>
+        </div>
+        
+        <div class="login-form-side position-relative">
+            
+            <button id="btn-dark-mode" class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-4 rounded-circle" style="width: 35px; height: 35px;" title="Cambiar Tema">
+                <i class="bi bi-moon-stars-fill" id="iconoTema"></i>
+            </button>
+
+            <div class="mb-5">
+                <h2 class="fw-bold text-dark">Bienvenido de nuevo</h2>
+                <p class="text-muted">Por favor, ingresa tus credenciales corporativas.</p>
+            </div>
+            
+            <div th:if="${param.error}" class="alert alert-danger shadow-sm d-flex align-items-center p-3 mb-4 rounded-3 border-0 border-start border-danger border-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-danger"></i>
+                <div><strong>Acceso denegado:</strong> El usuario o la contraseña son incorrectos.</div>
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success shadow-sm d-flex align-items-center p-3 mb-4 rounded-3 border-0 border-start border-success border-4" role="alert">
+                <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
+                <div><strong>Sesión finalizada:</strong> Ha salido del sistema con seguridad.</div>
+            </div>
+            
+            <form th:action="@{/login}" method="post">
+                <div class="form-floating mb-4">
+                    <input type="email" class="form-control bg-light border-0" id="username" name="username" placeholder="nombre@empresa.com" required>
+                    <label for="username" class="text-muted"><i class="bi bi-envelope me-2"></i>Correo Electrónico</label>
                 </div>
+                
+                <div class="form-floating mb-4">
+                    <input type="password" class="form-control bg-light border-0" id="password" name="password" placeholder="Contraseña" required>
+                    <label for="password" class="text-muted"><i class="bi bi-shield-lock me-2"></i>Contraseña Segura</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm rounded-3 transition-all hover-shadow mt-2">
+                    Ingresar al Sistema <i class="bi bi-box-arrow-in-right ms-2"></i>
+                </button>
+            </form>
+            
+            <div class="text-center mt-5">
+                <a th:href="@{/}" class="text-decoration-none text-muted small fw-medium transition-all hover-primary">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al portal público
+                </a>
             </div>
         </div>
     </div>
+
+    <script th:src="@{/js/script.js}"></script>
 </body>
 </html>

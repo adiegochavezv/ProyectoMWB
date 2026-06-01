@@ -2,194 +2,93 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard | LogiStock</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analítico | LogiStock</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
-<body>
+<body class="d-flex w-100 m-0 p-0 overflow-hidden" style="height: 100vh;">
 
     <div th:replace="~{layout/fragments :: nav-dashboard}"></div>
 
-    <div class="container my-4">
+    <div class="content p-4 p-md-5 w-100 flex-grow-1 overflow-auto bg-light transition-all" id="main-content-area">
         
-        <div id="tipo-cambio-widget" class="mb-4"></div>
-        <div id="api-moneda-container" class="mb-4"></div>
+        <div id="api-moneda-container" class="mb-5"></div>
 
-        <div id="dashboard-section">
-            <h2 class="mb-4"><i class="bi bi-speedometer2 text-primary"></i> Panel de Control</h2>
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-1"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Panel de Control y Analítica</h2>
+                <p class="text-muted mb-0">Resumen en tiempo real del estado de sus inventarios y operaciones.</p>
+            </div>
+        </div>
+        
+        <div class="row g-4 mb-5">
             
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-start border-primary border-4 p-3">
-                        <h6 class="text-muted text-uppercase small">Total Productos</h6>
-                        <h3 class="fw-bold mb-0" th:text="${#lists.size(productos)}">0</h3>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-start border-warning border-4 p-3">
-                        <h6 class="text-muted text-uppercase small">Categorías</h6>
-                        <h3 class="fw-bold mb-0" th:text="${#lists.size(categorias)}">0</h3>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-start border-danger border-4 p-3">
-                        <a th:href="@{/stock-critico}" class="text-decoration-none text-dark">
-                            <h6 class="text-muted text-uppercase small">Alertas Críticas</h6>
-                            <h3 class="fw-bold mb-0 text-danger">Ver Reporte</h3>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-md-8">
-                    <div class="card shadow-sm p-3">
-                        <h5><i class="bi bi-bar-chart-line text-success"></i> Niveles de Stock de Productos</h5>
-                        <div style="position: relative; height: 300px; width: 100%;">
-                            <canvas id="stockChart" width="400" height="200"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="inventario-section" style="display: none;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="bi bi-box-seam text-secondary"></i> Gestión de Almacén</h2>
-                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalProducto">
-                    <i class="bi bi-plus-circle"></i> Añadir Producto
-                </button>
-            </div>
-
-            <div class="card shadow-sm">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 table-almacen">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Stock</th>
-                                <th>P. Compra</th>
-                                <th>P. Venta</th>
-                                <th>Categoría</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="p : ${productos}">
-                                <td th:text="${p.id}">1</td>
-                                <td class="fw-bold" th:text="${p.nombre}">Producto Base</td>
-                                <td>
-                                    <span th:class="${p.cantidad < 5 ? 'badge bg-danger' : 'badge bg-success'}" th:text="${p.cantidad}">0</span>
-                                </td>
-                                <td th:text="'S/ ' + ${p.precioCompra}">0.00</td>
-                                <td th:text="'S/ ' + ${p.precioVenta}">0.00</td>
-                                <td th:text="${p.categoria != null ? p.categoria.nombre : 'Sin asignación'}">General</td>
-                                <td class="text-center">
-                                    <div class="btn-group font-sans">
-                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" th:data-bs-target="'#modalMovimiento' + ${p.id}">
-                                            <i class="bi bi-arrow-left-right"></i> Movimiento
-                                        </button>
-                                        <form th:action="@{/productos/eliminar/{id}(id=${p.id})}" method="post" class="d-inline m-0">
-                                            <button type="submit" class="btn btn-sm btn-danger btn-delete-product" th:data-name="${p.nombre}">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(productos)}">
-                                <td colspan="7" class="text-center text-muted py-3">No hay productos registrados en el almacén de MySQL.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalProducto" tabindex="-1" aria-labelledby="modalProductoLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{/productos/guardar}" method="post">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title" id="modalProductoLabel"><i class="bi bi-plus-circle"></i> Registrar Producto</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label font-medium">Nombre del Artículo</label>
-                            <input type="text" name="nombre" class="form-control" placeholder="Ej. Filtro de Aceite" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label font-medium">Cantidad Inicial (Stock)</label>
-                            <input type="number" name="cantidad" class="form-control" min="0" value="0" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label font-medium">Precio de Compra</label>
-                            <input type="number" step="0.01" name="precioCompra" class="form-control" placeholder="0.00" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label font-medium">Precio de Venta</label>
-                            <input type="number" step="0.01" name="precioVenta" class="form-control" placeholder="0.00" required />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label font-medium">Categoría de Almacén</label>
-                            <select name="categoria.id" class="form-select" required>
-                                <option value="" disabled selected>Seleccione una categoría...</option>
-                                <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}">Repuestos</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Persistir en BD</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div th:each="p : ${productos}">
-        <div class="modal fade" th:id="'modalMovimiento' + ${p.id}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form th:action="@{/productos/{id}/movimiento(id=${p.id})}" method="post" class="form-movimiento">
-                        <div class="modal-header bg-warning text-dark">
-                            <h5 class="modal-title fw-bold"><i class="bi bi-arrow-left-right"></i> Registrar Movimiento</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p class="mb-2">Producto seleccionado: <strong th:text="${p.nombre}"></strong></p>
-                            <p class="text-muted small">Stock Actual disponible: <span th:text="${p.cantidad}"></span> unidades.</p>
-                            <hr>
-                            <div class="mb-3">
-                                <label class="form-label font-medium">Tipo de Transacción</label>
-                                <select name="tipoMovimiento" class="form-select" required>
-                                    <option value="" disabled selected>Seleccione el motivo de la salida/entrada...</option>
-                                    <option value="INGRESO">🟢 Ingreso de mercadería (Abastecimiento)</option>
-                                    <option value="VENTA">🔵 Salida por Venta regular</option>
-                                    <option value="MERMA">🟠 Salida por Merma / Residuo</option>
-                                    <option value="DEFECTUOSO">🔴 Salida por Producto Defectuoso</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label font-medium">Cantidad de Unidades</label>
-                                <input type="number" name="cantidad" class="form-control" min="1" placeholder="Cantidad mínima 1" required />
+            <div class="col-12 col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden card-kpi hover-shadow transition-all">
+                    <div class="card-body p-4 position-relative">
+                        <div class="bg-primary opacity-10 position-absolute top-0 end-0 w-50 h-100 rounded-start-pill" style="z-index: 1;"></div>
+                        <div class="position-relative" style="z-index: 2;">
+                            <h6 class="text-muted text-uppercase fw-bold mb-2 small tracking-wider">Total de Productos</h6>
+                            <h1 class="fw-black mb-0 text-dark display-4" th:text="${#lists.size(productos)}">0</h1>
+                            <div class="mt-3 text-success small fw-bold">
+                                <i class="bi bi-graph-up-arrow me-1"></i> Stock activo valorizado
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-warning fw-medium">Procesar Ajuste</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden card-kpi hover-shadow transition-all">
+                    <div class="card-body p-4 position-relative">
+                        <div class="bg-success opacity-10 position-absolute top-0 end-0 w-50 h-100 rounded-start-pill" style="z-index: 1;"></div>
+                        <div class="position-relative" style="z-index: 2;">
+                            <h6 class="text-muted text-uppercase fw-bold mb-2 small tracking-wider">Familias / Categorías</h6>
+                            <h1 class="fw-black mb-0 text-dark display-4" th:text="${#lists.size(categorias)}">0</h1>
+                            <div class="mt-3 text-success small fw-bold">
+                                <i class="bi bi-diagram-3-fill me-1"></i> Clasificación ordenada
+                            </div>
                         </div>
-                    </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden card-kpi hover-shadow transition-all cursor-pointer bg-gradient" onclick="window.location.href='/stock-critico'">
+                    <div class="card-body p-4 position-relative">
+                        <div class="bg-danger opacity-10 position-absolute top-0 end-0 w-50 h-100 rounded-start-pill pulse-bg" style="z-index: 1;"></div>
+                        <div class="position-relative d-flex justify-content-between align-items-center" style="z-index: 2;">
+                            <div>
+                                <h6 class="text-muted text-uppercase fw-bold mb-2 small tracking-wider">Stock Crítico (< 5)</h6>
+                                <h1 class="fw-black mb-0 text-danger display-4" th:text="${#lists.size(criticos)}">0</h1>
+                            </div>
+                            <div class="text-danger fs-1 opacity-75 alert-icon-pulse">
+                                <i class="bi bi-exclamation-octagon-fill"></i>
+                            </div>
+                        </div>
+                        <div class="position-relative mt-3 text-end" style="z-index: 2;">
+                            <span class="text-danger small fw-bold text-decoration-underline">Revisar reporte urgente <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div th:replace="~{layout/fragments :: footer-app}"></div>
+        <div class="row mb-5">
+            <div class="col-12 col-xl-8">
+                <div class="card shadow-sm border-0 rounded-4 p-4 h-100">
+                    <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-activity text-info me-2"></i> Distribución y Volumetría Mensual</h5>
+                    <div style="position: relative; height: 350px; width: 100%;">
+                        <canvas id="stockChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div th:replace="~{layout/fragments :: footer-app}"></div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
