@@ -11,7 +11,7 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // CUMPLE RÚBRICA 5: Spring Validator
+    // Spring Validator
     @NotBlank(message = "El nombre no puede estar vacío")
     @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
     @Column(nullable = false)
@@ -29,7 +29,7 @@ public class Producto {
     @Positive(message = "El precio de venta debe ser mayor a 0")
     private Double precioVenta;
 
-    // CUMPLE RÚBRICA 5: Relación @ManyToOne (Muchos productos, una categoría)
+    // Relación @ManyToOne (Muchos productos, una categoría)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;

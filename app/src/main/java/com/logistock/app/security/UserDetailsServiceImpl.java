@@ -24,18 +24,24 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Correo no registrado en BD: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + email));
 
         return new User(
             usuario.getEmail(), 
-            usuario.getPassword(), // DEBE ESTAR CIFRADO EN BCRYPT EN LA BD
+            usuario.getPassword(), 
             mapearRoles(usuario.getRoles())
         );
     }
 
     private Collection<? extends GrantedAuthority> mapearRoles(Collection<Rol> roles) {
         return roles.stream()
-                .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
+                .map(rol -> {
+                    String roleName = rol.getNombre().toUpperCase();
+                    if (!roleName.startsWith("ROLE_")) {
+                        roleName = "ROLE_" + roleName;
+                    }
+                    return new SimpleGrantedAuthority(roleName);
+                })
                 .collect(Collectors.toList());
     }
 }

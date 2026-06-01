@@ -14,7 +14,7 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
-    // CUMPLE RÚBRICA 5: Relación @ManyToMany
+    // Relación @ManyToMany
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuarios_roles",
             joinColumns = @JoinColumn(name = "usuario_id"),

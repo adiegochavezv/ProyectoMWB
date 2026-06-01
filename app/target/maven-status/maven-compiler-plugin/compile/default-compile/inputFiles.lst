@@ -1,0 +1,15 @@
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\AppApplication.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\controller\ProductoRestController.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\model\Auditoria.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\model\Categoria.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\model\Producto.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\model\Rol.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\model\Usuario.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\repository\AuditoriaRepository.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\repository\CategoriaRepository.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\repository\ProductoRepository.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\repository\UsuarioRepository.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\security\SecurityConfig.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\security\UserDetailsServiceImpl.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\service\AuditoriaService.java
+D:\Users\Diego\Documents\Proyectos\app\src\main\java\com\logistock\app\WebController.java

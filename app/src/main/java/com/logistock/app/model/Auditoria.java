@@ -6,32 +6,38 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "auditoria")
 public class Auditoria {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime fecha;
+
+    @Column(name = "usuario_email", nullable = false)
     private String usuarioEmail;
+
+    @Column(nullable = false)
     private String accion;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String detalle;
 
-    @PrePersist
-    protected void onCreate() {
-        fecha = LocalDateTime.now();
+    public Auditoria() {
     }
 
-    // Constructor vacío y con parámetros
-    public Auditoria() {}
-    public Auditoria(String usuarioEmail, String accion, String detalle) {
-        this.usuarioEmail = usuarioEmail;
-        this.accion = accion;
-        this.detalle = detalle;
-    }
-
-    // Getters y Setters
+    // --- GETTERS Y SETTERS COMPLETO ---
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
     public LocalDateTime getFecha() { return fecha; }
+    public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
+
     public String getUsuarioEmail() { return usuarioEmail; }
+    public void setUsuarioEmail(String usuarioEmail) { this.usuarioEmail = usuarioEmail; }
+
     public String getAccion() { return accion; }
+    public void setAccion(String accion) { this.accion = accion; }
+
     public String getDetalle() { return detalle; }
+    public void setDetalle(String detalle) { this.detalle = detalle; }
 }

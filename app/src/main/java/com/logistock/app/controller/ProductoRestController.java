@@ -21,31 +21,36 @@ public class ProductoRestController {
         return productoRepository.findAll();
     }
 
-   // Importa esto arriba si no lo tienes: import java.util.Objects;
+    @GetMapping("/{id}")
+    public ResponseEntity<Producto> obtenerPorId(@PathVariable Long id) {
+        return productoRepository.findById(java.util.Objects.requireNonNull(id))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @PostMapping
     public ResponseEntity<Producto> crearProducto(@Valid @RequestBody Producto producto) {
-        // CORRECCIÓN NULL TYPE SAFETY: Obligamos a Java a confirmar que no es nulo
         Producto nuevoProducto = productoRepository.save(java.util.Objects.requireNonNull(producto));
         return ResponseEntity.ok(nuevoProducto);
     }
-    // CORRECCIÓN NULL TYPE SAFETY (Línea 43)
-    @GetMapping("/{id}")
 
-public ResponseEntity<Producto> obtenerPorId(@PathVariable Long id) {
-    if (id == null) return ResponseEntity.badRequest().build();
-    return productoRepository.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-}
+    @PutMapping("/{id}")
+    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @Valid @RequestBody Producto detalles) {
+        return productoRepository.findById(java.util.Objects.requireNonNull(id)).map(producto -> {
+            producto.setNombre(detalles.getNombre());
+            producto.setCantidad(detalles.getCantidad());
+            producto.setPrecioCompra(detalles.getPrecioCompra());
+            producto.setPrecioVenta(detalles.getPrecioVenta());
+            producto.setCategoria(detalles.getCategoria());
+            return ResponseEntity.ok(productoRepository.save(producto));
+        }).orElse(ResponseEntity.notFound().build());
+    }
 
-    // CORRECCIÓN NULL TYPE SAFETY (Línea 58)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
-        if (id == null) return ResponseEntity.badRequest().build();
-
-        if (productoRepository.existsById(id)) {
-            productoRepository.deleteById(id);
+        Long safeId = java.util.Objects.requireNonNull(id);
+        if (productoRepository.existsById(safeId)) {
+            productoRepository.deleteById(safeId);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

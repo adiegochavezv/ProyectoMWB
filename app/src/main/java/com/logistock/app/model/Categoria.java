@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-// CUMPLE RÚBRICA 2: @Entity, @Table, @Id
+//  @Entity, @Table, @Id
 @Entity
 @Table(name = "categorias")
 public class Categoria {
@@ -15,7 +15,7 @@ public class Categoria {
     @Column(nullable = false, unique = true)
     private String nombre;
 
-    // CUMPLE RÚBRICA 5: Relación @OneToMany (Una categoría, muchos productos)
+    // Relación @OneToMany (Una categoría, muchos productos)
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL)
     @JsonIgnore // Evita bucles infinitos al enviar JSON al frontend
     private List<Producto> productos;
