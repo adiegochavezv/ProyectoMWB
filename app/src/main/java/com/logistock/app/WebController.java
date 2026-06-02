@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class WebController {
@@ -22,37 +21,20 @@ public class WebController {
     @Autowired private AuditoriaService auditoriaService;
 
     @GetMapping({"/", "/index"})
-    public String index() { 
-        return "index"; 
-    }
+    public String index() { return "index"; }
 
     @GetMapping("/login")
-    public String login() { 
-        return "login"; 
-    }
+    public String login() { return "login"; }
 
- @GetMapping("/dashboard")
-public String dashboard(Model model) {
-    // Obtenemos los datos con seguridad contra nulos
-    var productos = productoRepository.findAll();
-    var categorias = categoriaRepository.findAll();
-    var criticos = productoRepository.findByCantidadLessThan(5);
-
-    // Si los repositorios devuelven null, forzamos una lista vacía para que la vista no falle
-    model.addAttribute("productos", productos != null ? productos : java.util.Collections.emptyList());
-    model.addAttribute("categorias", categorias != null ? categorias : java.util.Collections.emptyList());
-    model.addAttribute("criticos", criticos != null ? criticos : java.util.Collections.emptyList());
-    
-    return "app/dashboard";
-}
-    @GetMapping("/catalogo")
-    public String catalogo(Model model) {
+    // 1. DASHBOARD: Solo métricas y resumen (Separado del almacén)
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
         model.addAttribute("productos", productoRepository.findAll());
         model.addAttribute("categorias", categoriaRepository.findAll());
-        auditoriaService.registrarAccion("VISTA_CATALOGO", "Consulta general del catálogo de productos");
-        return "app/catalogo"; 
+        return "app/dashboard";
     }
 
+    // 2. ALMACÉN: Gestión completa de productos
     @GetMapping("/productos")
     public String productos(Model model) {
         model.addAttribute("productos", productoRepository.findAll());
@@ -60,66 +42,54 @@ public String dashboard(Model model) {
         return "app/productos";
     }
 
+    // 3. AUDITORÍA: Recuperada y conectada
     @GetMapping("/auditoria")
     public String auditoria(Model model) {
         model.addAttribute("auditorias", auditoriaRepository.findAllByOrderByFechaDesc());
-        auditoriaService.registrarAccion("VISTA_AUDITORIA", "Revisión del historial del sistema");
+        auditoriaService.registrarAccion("CONSULTA", "El usuario visualizó el registro de auditoría");
         return "app/auditoria";
     }
 
+    // Guardar o Editar Producto
     @PostMapping("/productos/guardar")
-    public String guardarProducto(@Valid @ModelAttribute Producto producto, BindingResult result, RedirectAttributes redirectAttrs) {
-        if (result.hasErrors()) {
-            redirectAttrs.addFlashAttribute("error", "Datos de producto inválidos.");
-            return "redirect:/productos";
-        }
+    public String guardarProducto(@Valid @ModelAttribute Producto producto, BindingResult result) {
+        if (result.hasErrors()) return "redirect:/productos?error=validacion";
+        
         boolean esNuevo = (producto.getId() == null);
         productoRepository.save(producto);
         
         String accion = esNuevo ? "CREAR_PRODUCTO" : "EDITAR_PRODUCTO";
-        auditoriaService.registrarAccion(accion, "Producto procesado: " + producto.getNombre());
-        redirectAttrs.addFlashAttribute("exito", "Producto registrado correctamente en el sistema.");
+        auditoriaService.registrarAccion(accion, "Producto: " + producto.getNombre());
         return "redirect:/productos";
     }
 
+    // 4. NUEVO: Lógica de Movimientos (Ingreso, Venta, Merma, Defectuoso)
     @PostMapping("/productos/{id}/movimiento")
     public String registrarMovimiento(@PathVariable Long id, 
                                       @RequestParam String tipoMovimiento, 
-                                      @RequestParam int cantidad,
-                                      RedirectAttributes redirectAttrs) {
+                                      @RequestParam int cantidad) {
         Long safeId = java.util.Objects.requireNonNull(id);
-        
         productoRepository.findById(safeId).ifPresent(p -> {
             int stockAnterior = p.getCantidad();
-            
             if ("INGRESO".equals(tipoMovimiento)) {
                 p.setCantidad(p.getCantidad() + cantidad);
             } else {
-                if (cantidad > p.getCantidad()) {
-                    redirectAttrs.addFlashAttribute("errorStock", 
-                        "Stock insuficiente para realizar la operación. Solicitó sacar " + cantidad + " pero solo hay " + p.getCantidad() + " unidades de " + p.getNombre() + ".");
-                    return; 
-                }
-                p.setCantidad(p.getCantidad() - cantidad); 
+                p.setCantidad(Math.max(0, p.getCantidad() - cantidad)); 
             }
-            
             productoRepository.save(p);
-            String detalle = String.format("Operación: %s | Artículo: %s | Transición: %d -> %d", 
+            String detalle = String.format("Tipo: %s | Prod: %s | Stock: %d -> %d", 
                                            tipoMovimiento, p.getNombre(), stockAnterior, p.getCantidad());
             auditoriaService.registrarAccion("MOVIMIENTO_INVENTARIO", detalle);
-            redirectAttrs.addFlashAttribute("exito", "Ajuste de inventario aplicado con éxito.");
         });
-        
         return "redirect:/productos";
     }
 
     @PostMapping("/productos/eliminar/{id}")
-    public String eliminarProducto(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+    public String eliminarProducto(@PathVariable Long id) {
         Long safeId = java.util.Objects.requireNonNull(id);
         productoRepository.findById(safeId).ifPresent(p -> {
             productoRepository.deleteById(safeId);
-            auditoriaService.registrarAccion("ELIMINAR_PRODUCTO", "Artículo eliminado de forma permanente: " + p.getNombre());
-            redirectAttrs.addFlashAttribute("exito", "Producto eliminado de la base de datos.");
+            auditoriaService.registrarAccion("ELIMINAR_PRODUCTO", "Eliminado: " + p.getNombre());
         });
         return "redirect:/productos";
     }
@@ -127,7 +97,7 @@ public String dashboard(Model model) {
     @GetMapping("/stock-critico")
     public String stockCritico(Model model) {
         model.addAttribute("criticos", productoRepository.findByCantidadLessThan(5));
-        auditoriaService.registrarAccion("VISTA_CRITICA", "Revisión de panel de urgencias de stock");
+        auditoriaService.registrarAccion("VISTA_CRITICA", "Acceso a panel crítico");
         return "app/stock_critico";
     }
 }
