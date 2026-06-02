@@ -31,15 +31,20 @@ public class WebController {
         return "login"; 
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        model.addAttribute("productos", productoRepository.findAll());
-        model.addAttribute("categorias", categoriaRepository.findAll());
-        model.addAttribute("criticos", productoRepository.findByCantidadLessThan(5)); // Para KPI de tarjetas
-        return "app/dashboard";
-    }
+ @GetMapping("/dashboard")
+public String dashboard(Model model) {
+    // Obtenemos los datos con seguridad contra nulos
+    var productos = productoRepository.findAll();
+    var categorias = categoriaRepository.findAll();
+    var criticos = productoRepository.findByCantidadLessThan(5);
 
-    // NUEVA MEJORA 1: BOTÓN CATÁLOGO (Solo lectura)
+    // Si los repositorios devuelven null, forzamos una lista vacía para que la vista no falle
+    model.addAttribute("productos", productos != null ? productos : java.util.Collections.emptyList());
+    model.addAttribute("categorias", categorias != null ? categorias : java.util.Collections.emptyList());
+    model.addAttribute("criticos", criticos != null ? criticos : java.util.Collections.emptyList());
+    
+    return "app/dashboard";
+}
     @GetMapping("/catalogo")
     public String catalogo(Model model) {
         model.addAttribute("productos", productoRepository.findAll());
@@ -77,7 +82,6 @@ public class WebController {
         return "redirect:/productos";
     }
 
-    // MEJORA 6: VALIDACIÓN CRÍTICA DE STOCK
     @PostMapping("/productos/{id}/movimiento")
     public String registrarMovimiento(@PathVariable Long id, 
                                       @RequestParam String tipoMovimiento, 
@@ -91,11 +95,10 @@ public class WebController {
             if ("INGRESO".equals(tipoMovimiento)) {
                 p.setCantidad(p.getCantidad() + cantidad);
             } else {
-                // REGLA DE NEGOCIO: Bloqueo absoluto de stock negativo (Backend Validation)
                 if (cantidad > p.getCantidad()) {
                     redirectAttrs.addFlashAttribute("errorStock", 
                         "Stock insuficiente para realizar la operación. Solicitó sacar " + cantidad + " pero solo hay " + p.getCantidad() + " unidades de " + p.getNombre() + ".");
-                    return; // Aborta la operación y la base de datos no se toca
+                    return; 
                 }
                 p.setCantidad(p.getCantidad() - cantidad); 
             }
